@@ -1,18 +1,16 @@
-# HowAboutWe JavaScript Style Guide() {
+# HowAboutWe JavaScript Style Guide
 
 *A mostly reasonable approach to JavaScript*
 
 
 ## <a name='TOC'>Table of Contents</a>
 
-  1. [Types](#types)
   1. [Objects](#objects)
   1. [Arrays](#arrays)
   1. [Strings](#strings)
   1. [Functions](#functions)
   1. [Properties](#properties)
   1. [Variables](#variables)
-  1. [Hoisting](#hoisting)
   1. [Conditional Expressions & Equality](#conditionals)
   1. [Blocks](#blocks)
   1. [Comments](#comments)
@@ -23,50 +21,14 @@
   1. [Naming Conventions](#naming-conventions)
   1. [Accessors](#accessors)
   1. [Constructors](#constructors)
-  1. [Modules](#modules)
   1. [jQuery](#jquery)
+  1. [Modules](#modules)
   1. [ES5 Compatability](#es5)
-  1. [Testing](#testing)
   1. [Performance](#performance)
   1. [Resources](#resources)
   1. [The JavaScript Style Guide Guide](#guide-guide)
   1. [Contributors](#contributors)
   1. [License](#license)
-
-## <a name='types'>Types</a>
-
-  - **Primitives**: When you access a primitive type you work directly on its value
-
-    + `String`
-    + `Number`
-    + `Boolean`
-    + `null`
-    + `undefined`
-
-    ```javascript
-    var foo = 1;
-    var bar = foo;
-
-    bar = 9;
-
-    console.log(foo, bar); // => 1, 9
-    ```
-  - **Complex**: When you access a complex type you work on a reference to its value
-
-    + `Object`
-    + `Array`
-    + `Function`
-
-    ```javascript
-    var foo = [1, 2];
-    var bar = foo;
-
-    bar[0] = 9;
-
-    console.log(foo[0], bar[0]); // => 9, 9
-    ```
-
-    **[[⬆]](#TOC)**
 
 ## <a name='objects'>Objects</a>
 
@@ -169,6 +131,22 @@
 
     // good
     var fullName = 'Bob' + this.lastName;
+
+    // bad
+    var fullName = "<a href=\"/name\">Bob " + this.lastName + "</a>";
+
+    // good
+    var fullName = '<a href="/name">Bob ' + this.lastName + '</a>';
+    ```
+
+  - Use double quotes `""` for interpreted strings inside templates.
+
+    ```javascript
+    // bad
+    var name = users['#{ getUser }'];
+
+    // good
+    var name = users["#{ getUser }"];
     ```
 
   - Strings longer than 80 characters should be written across multiple lines using string concatenation.
@@ -319,16 +297,13 @@
   - Use subscript notation `[]` when accessing properties with a variable.
 
     ```javascript
-    var luke = {
-      jedi: true,
-      age: 28
+    var users = {
+      jane: {},
+      john: {}
     };
 
-    function getProp(prop) {
-      return luke[prop];
-    }
-
-    var isJedi = getProp('jedi');
+    var userName = getUsername();
+    var userObject = users[userName];
     ```
 
     **[[⬆]](#TOC)**
@@ -363,31 +338,6 @@
     var items = getItems();
     var goSportsTeam = true;
     var dragonball = 'z';
-    ```
-
-  - Declare unassigned variables last. This is helpful when later on you might need to assign a variable depending on one of the previous assigned variables.
-
-    ```javascript
-    // bad
-    var i;
-    var len;
-    var dragonball;
-    var items = getItems();
-    var goSportsTeam = true;
-
-    // bad
-    var items = getItems();
-    var i;
-    var goSportsTeam = true;
-    var len;
-    var dragonball;
-
-    // good
-    var items = getItems();
-    var goSportsTeam = true;
-    var i;
-    var len;
-    var dragonball;
     ```
 
   - Assign variables at the top of their scope. This helps avoid issues with variable declaration and assignment hoisting related issues.
@@ -451,97 +401,6 @@
     **[[⬆]](#TOC)**
 
 
-## <a name='hoisting'>Hoisting</a>
-
-  - Variable declarations get hoisted to the top of their scope, their assignment does not.
-
-    ```javascript
-    // we know this wouldn't work (assuming there
-    // is no notDefined global variable)
-    function example() {
-      console.log(notDefined); // => throws a ReferenceError
-    }
-
-    // creating a variable declaration after you
-    // reference the variable will work due to
-    // variable hoisting. Note: the assignment
-    // value of `true` is not hoisted.
-    function example() {
-      console.log(declaredButNotAssigned); // => undefined
-      var declaredButNotAssigned = true;
-    }
-
-    // The interpretor is hoisting the variable
-    // declaration to the top of the scope.
-    // Which means our example could be rewritten as:
-    function example() {
-      var declaredButNotAssigned;
-      console.log(declaredButNotAssigned); // => undefined
-      declaredButNotAssigned = true;
-    }
-    ```
-
-  - Anonymous function expression hoist their variable name, but not the function assignment.
-
-    ```javascript
-    function example() {
-      console.log(anonymous); // => undefined
-
-      anonymous(); // => TypeError anonymous is not a function
-
-      var anonymous = function() {
-        console.log('anonymous function expression');
-      };
-    }
-    ```
-
-  - Named function expressions hoist the variable name, not the function name or the function body.
-
-    ```javascript
-    function example() {
-      console.log(named); // => undefined
-
-      named(); // => TypeError named is not a function
-
-      superPower(); // => ReferenceError superPower is not defined
-
-      var named = function superPower() {
-        console.log('Flying');
-      };
-
-
-      // the same is true when the function name
-      // is the same as the variable name.
-      function example() {
-        console.log(named); // => undefined
-
-        named(); // => TypeError named is not a function
-
-        var named = function named() {
-          console.log('named');
-        };
-      }
-    }
-    ```
-
-  - Function declarations hoist their name and the function body.
-
-    ```javascript
-    function example() {
-      superPower(); // => Flying
-
-      function superPower() {
-        console.log('Flying');
-      }
-    }
-    ```
-
-  - For more information refer to [JavaScript Scoping & Hoisting](http://www.adequatelygood.com/2010/2/JavaScript-Scoping-and-Hoisting) by [Ben Cherry](http://www.adequatelygood.com/)
-
-    **[[⬆]](#TOC)**
-
-
-
 ## <a name='conditionals'>Conditional Expressions & Equality</a>
 
   - Use `===` and `!==` over `==` and `!=`.
@@ -573,16 +432,6 @@
     if (name) {
       // ...stuff...
     }
-
-    // bad
-    if (collection.length > 0) {
-      // ...stuff...
-    }
-
-    // good
-    if (collection.length) {
-      // ...stuff...
-    }
     ```
 
   - For more information see [Truth Equality and JavaScript](http://javascriptweblog.wordpress.com/2011/02/07/truth-equality-and-javascript/#more-2108) by Angus Croll
@@ -592,15 +441,27 @@
 
 ## <a name='blocks'>Blocks</a>
 
-  - Use braces with all multi-line blocks.
+  - Use braces with all blocks.
 
     ```javascript
     // bad
     if (test)
       return false;
 
-    // good
+    // bad
     if (test) return false;
+
+    // good
+    if (test) {
+      return false;
+    }
+    ```
+
+  - Always put blocks and curlys on their own lines.
+
+    ```javascript
+    // bad
+    if (test) { return false; }
 
     // good
     if (test) {
@@ -609,6 +470,10 @@
 
     // bad
     function() { return false; }
+
+    // bad
+    function() {
+        return false; }
 
     // good
     function() {
@@ -766,22 +631,6 @@
       breed: 'Bernese Mountain Dog'
     });
     ```
-  - Place an empty newline at the end of the file.
-
-    ```javascript
-    // bad
-    (function(global) {
-      // ...stuff...
-    })(this);
-    ```
-
-    ```javascript
-    // good
-    (function(global) {
-      // ...stuff...
-    })(this);
-
-    ```
 
     **[[⬆]](#TOC)**
 
@@ -880,27 +729,12 @@
     var val = parseInt(inputValue, 10);
     ```
 
-  - Booleans:
-
-    ```javascript
-    var age = 0;
-
-    // bad
-    var hasAge = new Boolean(age);
-
-    // good
-    var hasAge = Boolean(age);
-
-    // good
-    var hasAge = !!age;
-    ```
-
     **[[⬆]](#TOC)**
 
 
 ## <a name='naming-conventions'>Naming Conventions</a>
 
-  - Avoid single letter names. Be descriptive with your naming.
+  - Avoid single letter names. Be descriptive with your naming. These get uglified anyways.
 
     ```javascript
     // bad
@@ -956,14 +790,6 @@
     });
     ```
 
-  - Use a leading underscore `_` when naming private properties
-
-    ```javascript
-    // bad
-    this.__firstName__ = 'Panda';
-    this.firstName_ = 'Panda';
-    ```
-
   - Name your functions. This is helpful for stack traces.
 
     ```javascript
@@ -983,8 +809,8 @@
 
 ## <a name='accessors'>Accessors</a>
 
-  - Accessor functions for properties are not required
-  - If you do make accessor functions use getVal() and setVal('hello')
+  - Accessor functions for properties are _not_ required
+  - If you do make accessor functions, always prepend with `get` and `set`. Eg- getVal() and setVal('hello').
 
     ```javascript
     // bad
@@ -1102,36 +928,6 @@
     **[[⬆]](#TOC)**
 
 
-## <a name='modules'>Modules</a>
-
-  - The module should start with a `!`. This ensures that if a malformed module forgets to include a final semicolon there aren't errors in production when the scripts get concatenated.
-  - The file should be named with camelCase, live in a folder with the same name, and match the name of the single export.
-  - Add a method called noConflict() that sets the exported module to the previous version.
-  - Always declare `'use strict;'` at the top of the module.
-
-    ```javascript
-    // fancyInput/fancyInput.js
-
-    !function(global) {
-      'use strict';
-
-      var previousFancyInput = global.FancyInput;
-
-      function FancyInput(options) {
-        options || (options = {});
-      }
-
-      FancyInput.noConflict = function noConflict() {
-        global.FancyInput = previousFancyInput;
-      };
-
-      global.FancyInput = FancyInput;
-    }(this);
-    ```
-
-    **[[⬆]](#TOC)**
-
-
 ## <a name='jquery'>jQuery</a>
 
   - Prefix jQuery object variables with a `$`.
@@ -1142,6 +938,12 @@
 
     // good
     var $sidebar = $('.sidebar');
+
+    // bad
+    var $primary_nav = $('#primary-nav');
+
+    // good
+    var $primaryNav = $('#primary-nav');
     ```
 
   - If a jQuery lookup is performed more than once, cache the jQuery object.
@@ -1199,6 +1001,63 @@
     $('.sidebar').find('ul').hide();
     ```
 
+  - Don't combine elements with a class or ID as part of the selector. If this results in a bad selection, you probably need to refactor your DOM.
+
+    ```javascript
+    // bad
+    $('form#new_user').submit();
+
+    // bad
+    $('li.user').hide();
+
+    // good
+    $('#new_user').submit();
+
+    // good
+    $('.user').hide();
+    ```
+
+    **[[⬆]](#TOC)**
+
+
+## <a name='modules'>Modules</a>
+
+  - We use the JavaScript Module Pattern, as defined by Ben Cherry. [Read up on it here](http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html).
+  - Files should be named with camelCase, live in their appropriate folder (views/ utils/ etc), and match the name of the single export.
+  - Always declare `'use strict;'` at the top of the module.
+  - Always return the original `module` object.
+  - If you need to reference any other global objects, pass it to the module's arguments to help provide faster lookups and prevent linting errors.
+
+    ```javascript
+    /*jshint forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, browser:true, jquery:true, indent:2, maxerr:100 */
+
+    /*
+      @namespace viewName
+      @memberOf haw.views
+    */
+    var haw = (function (module, $) {
+      'use strict';
+
+      // Module Namespace Extension
+      var views = module.views = module.views || {};
+      var viewName = views.viewName = views.viewName || {};
+
+
+      // Private Variables
+      var foo = "bar";
+
+      // Private Method
+      function privateMethod () {}
+
+      // Public API
+      viewName.publicMethod = function () {};
+
+      // Return the extended module
+      return module;
+
+    }(haw || {}, jQuery));
+    ```
+
     **[[⬆]](#TOC)**
 
 
@@ -1207,19 +1066,6 @@
   - Refer to [Kangax](https://twitter.com/kangax/)'s ES5 [compatibility table](http://kangax.github.com/es5-compat-table/)
 
   **[[⬆]](#TOC)**
-
-
-## <a name='testing'>Testing</a>
-
-  - **Yup.**
-
-    ```javascript
-    function() {
-      return true;
-    }
-    ```
-
-    **[[⬆]](#TOC)**
 
 
 ## <a name='performance'>Performance</a>
@@ -1242,6 +1088,7 @@
 
 **Other Styleguides**
 
+  - [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript)
   - [Google JavaScript Style Guide](http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml)
   - [jQuery Core Style Guidelines](http://docs.jquery.com/JQuery_Core_Style_Guidelines)
   - [Principles of Writing Consistent, Idiomatic JavaScript](https://github.com/rwldrn/idiomatic.js/)
@@ -1271,15 +1118,19 @@
   - [Dustin Diaz](http://dustindiaz.com/)
   - [net.tutsplus](http://net.tutsplus.com/?s=javascript)
 
+**Additional Articles**
+
+  - [JavaScript Scoping & Hoisting](http://www.adequatelygood.com/2010/2/JavaScript-Scoping-and-Hoisting) - Ben Cherry
+  - [JavaScript Module Pattern: In-Depth](http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html) - Ben Cherry
+  - [Named function expressions demystified](http://kangax.github.io/nfe/) - Juriy Zaytsev
+  - [Function Declarations vs. Function Expressions](http://javascriptweblog.wordpress.com/2010/07/06/function-declarations-vs-function-expressions/) - Angus Croll
+  - [Essential JavaScript Namespacing Patterns](http://addyosmani.com/blog/essential-js-namespacing/) - Addy Osmani
+
   **[[⬆]](#TOC)**
 
 ## <a name='guide-guide'>The JavaScript Style Guide Guide</a>
 
   - [Reference](//github.com/airbnb/javascript/wiki/The-JavaScript-Style-Guide-Guide)
-
-## <a name='authors'>Contributors</a>
-
-  - [View Contributors](https://github.com/airbnb/javascript/graphs/contributors)
 
 
 ## <a name='license'>License</a>
@@ -1308,6 +1159,4 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **[[⬆]](#TOC)**
-
-# };
 
