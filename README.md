@@ -23,9 +23,10 @@
   1. [Constructors](#constructors)
   1. [jQuery](#jquery)
   1. [Modules](#modules)
-  1. [ES5 Compatability](#es5)
+  1. [ES5 Compatibility](#es5)
   1. [Performance](#performance)
   1. [Resources](#resources)
+  1. [In the Wild](#in-the-wild)
   1. [The JavaScript Style Guide Guide](#guide-guide)
   1. [Contributors](#contributors)
   1. [License](#license)
@@ -48,14 +49,14 @@
     // bad
     var superman = {
       class: 'superhero',
-      default: { clark: kent },
+      default: { clark: 'kent' },
       private: true
     };
 
     // good
     var superman = {
       klass: 'superhero',
-      defaults: { clark: kent },
+      defaults: { clark: 'kent' },
       hidden: true
     };
     ```
@@ -127,10 +128,10 @@
     var name = 'Bob Parr';
 
     // bad
-    var fullName = "Bob" + this.lastName;
+    var fullName = "Bob " + this.lastName;
 
     // good
-    var fullName = 'Bob' + this.lastName;
+    var fullName = 'Bob ' + this.lastName;
 
     // bad
     var fullName = "<a href=\"/name\">Bob " + this.lastName + "</a>";
@@ -259,7 +260,7 @@
     }
     ```
 
-  - Never name a parameter `arguments`, this will take precendence over the `arguments` object that is given to every function scope.
+  - Never name a parameter `arguments`, this will take precedence over the `arguments` object that is given to every function scope.
 
     ```javascript
     // bad
@@ -533,7 +534,7 @@
     function getType() {
       console.log('fetching type...');
       // set the default type to 'no type'
-      var type = this._type || 'no type';i
+      var type = this._type || 'no type';
 
       return type;
     }
@@ -790,6 +791,26 @@
     });
     ```
 
+  - When saving a reference to `this` use `self`.
+
+    ```javascript
+    // bad
+    function() {
+      var that = this;
+      return function() {
+        console.log(that);
+      }
+    }
+
+    // good
+    function() {
+      var self = this;
+      return function() {
+        console.log(self);
+      }
+    }
+    ```
+
   - Name your functions. This is helpful for stack traces.
 
     ```javascript
@@ -891,7 +912,7 @@
     };
     ```
 
-  - Constructor methods should try to return `this`. This helps with method chaining which is often useful.
+  - Constructor can return `this` to help with method chaining.
 
     ```javascript
     // bad
@@ -1061,7 +1082,7 @@
     **[[⬆]](#TOC)**
 
 
-## <a name='es5'>ECMAScript 5 Compatability</a>
+## <a name='es5'>ECMAScript 5 Compatibility</a>
 
   - Refer to [Kangax](https://twitter.com/kangax/)'s ES5 [compatibility table](http://kangax.github.com/es5-compat-table/)
 
@@ -1070,10 +1091,13 @@
 
 ## <a name='performance'>Performance</a>
 
+  - [On Layout & Web Performance](http://kellegous.com/j/2013/01/26/layout-performance/)
   - [String vs Array Concat](http://jsperf.com/string-vs-array-concat/2)
   - [Try/Catch Cost In a Loop](http://jsperf.com/try-catch-in-loop-cost)
   - [Bang Function](http://jsperf.com/bang-function)
   - [jQuery Find vs Context, Selector](http://jsperf.com/jquery-find-vs-context-sel/13)
+  - [innerHTML vs textContent for script text](http://jsperf.com/innerhtml-vs-textcontent-for-script-text)
+  - [Long String Concatenation](http://jsperf.com/ya-string-concat)
   - Loading...
 
   **[[⬆]](#TOC)**
@@ -1088,7 +1112,6 @@
 
 **Other Styleguides**
 
-  - [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript)
   - [Google JavaScript Style Guide](http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml)
   - [jQuery Core Style Guidelines](http://docs.jquery.com/JQuery_Core_Style_Guidelines)
   - [Principles of Writing Consistent, Idiomatic JavaScript](https://github.com/rwldrn/idiomatic.js/)
@@ -1106,7 +1129,7 @@
 
 **Blogs**
 
-  - [DailyJS](//dailyjs.com)
+  - [DailyJS](http://dailyjs.com)
   - [JavaScript Weekly](http://javascriptweekly.com/)
   - [JavaScript, JavaScript...](http://javascriptweblog.wordpress.com/)
   - [Bocoup Weblog](http://weblog.bocoup.com/)
@@ -1128,9 +1151,27 @@
 
   **[[⬆]](#TOC)**
 
+## <a name='in-the-wild'>In the Wild</a>
+
+  This is a list of organizations that are using this style guide. Send us a pull request or open an issue and we'll add you to the list.
+
+  - **Airbnb**: [airbnb/javascript](https://github.com/airbnb/javascript)
+  - **American Insitutes for Research**: [AIRAST/javascript](https://github.com/AIRAST/javascript)
+  - **ExactTarget**: [ExactTarget/javascript](https://github.com/ExactTarget/javascript)
+  - **GeneralElectric**: [GeneralElectric/javascript](https://github.com/GeneralElectric/javascript)
+  - **GoodData**: [gooddata/gdc-js-style](https://github.com/gooddata/gdc-js-style)
+  - **How About We**: [howaboutwe/javascript](https://github.com/howaboutwe/javascript)
+  - **MinnPost**: [MinnPost/javascript](https://github.com/MinnPost/javascript)
+  - **ModCloth**: [modcloth/javascript](https://github.com/modcloth/javascript)
+  - **National Geographic**: [natgeo/javascript](https://github.com/natgeo/javascript)
+  - **Razorfish**: [razorfish/javascript-style-guide](https://github.com/razorfish/javascript-style-guide)
+  - **Shutterfly**: [shutterfly/javascript](https://github.com/shutterfly/javascript)
+  - **Userify**: [userify/javascript](https://github.com/userify/javascript)
+  - **Zillow**: [zillow/javascript](https://github.com/zillow/javascript)
+
 ## <a name='guide-guide'>The JavaScript Style Guide Guide</a>
 
-  - [Reference](//github.com/airbnb/javascript/wiki/The-JavaScript-Style-Guide-Guide)
+  - [Reference](https://github.com/airbnb/javascript/wiki/The-JavaScript-Style-Guide-Guide)
 
 
 ## <a name='license'>License</a>
