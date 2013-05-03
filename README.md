@@ -17,7 +17,7 @@
   1. [Whitespace](#whitespace)
   1. [Leading Commas](#leading-commas)
   1. [Semicolons](#semicolons)
-  1. [Type Coercion](#type-coercion)
+  1. [Type Casting & Coercion](#type-coercion)
   1. [Naming Conventions](#naming-conventions)
   1. [Accessors](#accessors)
   1. [Constructors](#constructors)
@@ -27,9 +27,11 @@
   1. [Performance](#performance)
   1. [Resources](#resources)
   1. [In the Wild](#in-the-wild)
+  1. [Translation](#translation)
   1. [The JavaScript Style Guide Guide](#guide-guide)
   1. [Contributors](#contributors)
   1. [License](#license)
+
 
 ## <a name='objects'>Objects</a>
 
@@ -97,6 +99,19 @@
     ```
 
   - For [performance reasons](http://jsperf.com/array-direct-assignment-vs-push/5) use direct assignment over Array#push
+  - If you don't know array length use Array#push.
+
+    ```javascript
+    var someStack = [];
+
+    // good
+    someStack[someStack.length] = 'abracadabra';
+
+    // good
+    someStack.push('abracadabra');
+    ```
+
+  - When you need to copy an array use Array#slice. [jsPerf](http://jsperf.com/converting-arguments-to-an-array/7)
 
     ```javascript
     var len = items.length;
@@ -105,12 +120,19 @@
 
     // bad
     for (i = 0; i < len; i++) {
-      itemsCopy.push(items[i])
+      itemsCopy[i] = items[i];
     }
 
     // good
-    for (i = 0; i < len; i++) {
-      itemsCopy[i] = items[i];
+    itemsCopy = items.slice();
+    ```
+
+  - To convert an array-like object to an array, use Array#slice.
+
+    ```javascript
+    function trigger() {
+      var args = Array.prototype.slice.call(arguments);
+      ...
     }
     ```
     **[[⬆]](#TOC)**
@@ -151,6 +173,7 @@
     ```
 
   - Strings longer than 80 characters should be written across multiple lines using string concatenation.
+  - Note: If overused, long strings with concatenation could impact performance. [jsPerf](http://jsperf.com/ya-string-concat) & [Discussion](https://github.com/airbnb/javascript/issues/40)
 
     ```javascript
     // bad
@@ -211,10 +234,10 @@
       items = [];
 
       for (i = 0; i < length; i++) {
-        items[i] = '<li>' + messages[i].message + '</li>';
+        items[i] = messages[i].message;
       }
 
-      return '<ul>' + items.join('') + '</ul>';
+      return '<ul><li>' + items.join('</li><li>') + '</li></ul>';
     }
     ```
 
@@ -243,6 +266,7 @@
     ```
 
   - Never declare a function in a non-function block (if, while, etc). Assign the function to a variable instead. Browsers will allow you to do it, but they all interpret it differently, which is bad news bears.
+  - **Note:** ECMA-262 defines a `block` as a list of statements. A function declaration is not a statement. [Read ECMA-262's note on this issue](http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf#page=97).
 
     ```javascript
     // bad
@@ -339,6 +363,8 @@
     var items = getItems();
     var goSportsTeam = true;
     var dragonball = 'z';
+    var length;
+    var i;
     ```
 
   - Assign variables at the top of their scope. This helps avoid issues with variable declaration and assignment hoisting related issues.
@@ -407,12 +433,12 @@
   - Use `===` and `!==` over `==` and `!=`.
   - Conditional expressions are evaluated using coercion with the `ToBoolean` method and always follow these simple rules:
 
-    + **Objects** evaluate to `**true**`
-    + **Undefined** evaluates to `**false**`
-    + **Null** evaluates to `**false**`
+    + **Objects** evaluate to **true**
+    + **Undefined** evaluates to **false**
+    + **Null** evaluates to **false**
     + **Booleans** evaluate to **the value of the boolean**
-    + **Numbers** evalute to `**false**` if **+0, -0, or NaN**, otherwise `**true**`
-    + **Strings** evaluate to `**false` if an **empty string `''`**, otherwise `**true**`
+    + **Numbers** evalute to **false** if **+0, -0, or NaN**, otherwise **true**
+    + **Strings** evaluate to **false** if an empty string `''`, otherwise **true**
 
     ```javascript
     if ([0]) {
@@ -506,8 +532,8 @@
 
     // good
     /**
-     * Returns a new element based on
-     * the passed in tag name.
+     * make() returns a new element
+     * based on the passed in tag name
      *
      * @param {String} tag
      * @return {Element} element
@@ -599,7 +625,7 @@
 
     // bad
     function() {
-    ∙ var name;
+    ∙var name;
     }
 
     // good
@@ -633,8 +659,38 @@
     });
     ```
 
-    **[[⬆]](#TOC)**
+  - Use indentation when making long method chains.
 
+    ```javascript
+    // bad
+    $('#items').find('.selected').highlight().end().find('.open').updateCount();
+
+    // good
+    $('#items')
+      .find('.selected')
+        .highlight()
+        .end()
+      .find('.open')
+        .updateCount();
+
+    // bad
+    var leds = stage.selectAll('.led').data(data).enter().append("svg:svg").class('led', true)
+        .attr('width',  (radius + margin) * 2).append("svg:g")
+        .attr("transform", "translate(" + (radius + margin) + "," + (radius + margin) + ")")
+        .call(tron.led);
+
+    // good
+    var leds = stage.selectAll('.led')
+        .data(data)
+      .enter().append("svg:svg")
+        .class('led', true)
+        .attr('width',  (radius + margin) * 2)
+      .append("svg:g")
+        .attr("transform", "translate(" + (radius + margin) + "," + (radius + margin) + ")")
+        .call(tron.led);
+    ```
+
+    **[[⬆]](#TOC)**
 
 ## <a name='leading-commas'>Leading Commas</a>
 
@@ -693,7 +749,7 @@
     **[[⬆]](#TOC)**
 
 
-## <a name='type-coercion'>Type Coercion</a>
+## <a name='type-coercion'>Type Casting & Coercion</a>
 
   - Perform type coercion at the beginning of the statement.
   - Strings:
@@ -715,7 +771,8 @@
     ```
 
   - Numbers:
-- Don't perform type coercion for integers. Use `parseInt` with a radix parameter instead.
+  - Use `parseInt` for Numbers and always with a radix for type casting.
+  - If for whatever reason you are doing something wild and `parseInt` is your bottleneck and need to use Bitshift for [performance reasons](http://jsperf.com/coercion-vs-casting/3), leave a comment explaining why and what you're doing.
 
     ```javascript
     var inputValue = '4';
@@ -799,7 +856,7 @@
       var that = this;
       return function() {
         console.log(that);
-      }
+      };
     }
 
     // good
@@ -807,7 +864,7 @@
       var self = this;
       return function() {
         console.log(self);
-      }
+      };
     }
     ```
 
@@ -912,7 +969,7 @@
     };
     ```
 
-  - Constructor can return `this` to help with method chaining.
+  - Methods can return `this` to help with method chaining.
 
     ```javascript
     // bad
@@ -1006,23 +1063,30 @@
     }
     ```
 
-  - Scope jQuery object queries with find. [jsPerf](http://jsperf.com/jquery-find-vs-context-sel/13)
+  - For DOM queries use Cascading `$('.sidebar ul')` or parent > child `$('.sidebar > ul')`. [jsPerf](http://jsperf.com/jquery-find-vs-context-sel/16)
+  - Use `find` with scoped jQuery object queries.
 
     ```javascript
     // bad
-    $('.sidebar ul').hide();
-
-    // bad
-    $('.sidebar > ul').hide();
-
-    // bad
     $('.sidebar', 'ul').hide();
 
-    // good
+    // bad
     $('.sidebar').find('ul').hide();
+
+    // good
+    $('.sidebar ul').hide();
+
+    // good
+    $('.sidebar > ul').hide();
+
+    // good (slower)
+    $sidebar.find('ul');
+
+    // good (faster)
+    $($sidebar[0]).find('ul');
     ```
 
-  - Don't combine elements with a class or ID as part of the selector. If this results in a bad selection, you probably need to refactor your DOM.
+  - Don't combine elements with a class or ID as part of the selector. If this results in selecting elements you don't want, you probably need to refactor your DOM.
 
     ```javascript
     // bad
@@ -1116,6 +1180,11 @@
   - [jQuery Core Style Guidelines](http://docs.jquery.com/JQuery_Core_Style_Guidelines)
   - [Principles of Writing Consistent, Idiomatic JavaScript](https://github.com/rwldrn/idiomatic.js/)
 
+**Other Styles**
+
+  - [Naming this in nested functions](https://gist.github.com/4135065) - Christian Johansen
+  - [Conditional Callbacks](https://github.com/airbnb/javascript/issues/52)
+
 **Books**
 
   - [JavaScript: The Good Parts](http://www.amazon.com/JavaScript-Good-Parts-Douglas-Crockford/dp/0596517742) - Douglas Crockford
@@ -1129,7 +1198,7 @@
 
 **Blogs**
 
-  - [DailyJS](http://dailyjs.com)
+  - [DailyJS](http://dailyjs.com/)
   - [JavaScript Weekly](http://javascriptweekly.com/)
   - [JavaScript, JavaScript...](http://javascriptweblog.wordpress.com/)
   - [Bocoup Weblog](http://weblog.bocoup.com/)
@@ -1139,7 +1208,7 @@
   - [Ben Alman](http://benalman.com/)
   - [Dmitry Baranovskiy](http://dmitry.baranovskiy.com/)
   - [Dustin Diaz](http://dustindiaz.com/)
-  - [net.tutsplus](http://net.tutsplus.com/?s=javascript)
+  - [nettuts](http://net.tutsplus.com/?s=javascript)
 
 **Additional Articles**
 
@@ -1150,6 +1219,7 @@
   - [Essential JavaScript Namespacing Patterns](http://addyosmani.com/blog/essential-js-namespacing/) - Addy Osmani
 
   **[[⬆]](#TOC)**
+
 
 ## <a name='in-the-wild'>In the Wild</a>
 
@@ -1168,6 +1238,16 @@
   - **Shutterfly**: [shutterfly/javascript](https://github.com/shutterfly/javascript)
   - **Userify**: [userify/javascript](https://github.com/userify/javascript)
   - **Zillow**: [zillow/javascript](https://github.com/zillow/javascript)
+
+
+## <a name='translation'>Translation</a>
+
+  This style guide is also available in other languages:
+
+  - :de: **German**: [timofurrer/javascript-style-guide](https://github.com/timofurrer/javascript-style-guide)
+  - :jp: **Japanese**: [mitsuruog/javacript-style-guide](https://github.com/mitsuruog/javacript-style-guide)
+  - :br: **Portuguese**: [armoucar/javascript-style-guide](https://github.com/armoucar/javascript-style-guide)
+
 
 ## <a name='guide-guide'>The JavaScript Style Guide Guide</a>
 
