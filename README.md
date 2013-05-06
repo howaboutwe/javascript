@@ -98,13 +98,12 @@
     }
     ```
 
-  - For [performance reasons](http://jsperf.com/array-direct-assignment-vs-push/5) use direct assignment over Array#push
-  - If you don't know array length use Array#push.
+  - Always use array#push when appending new values to an array.
 
     ```javascript
     var someStack = [];
 
-    // good
+    // bad
     someStack[someStack.length] = 'abracadabra';
 
     // good
@@ -513,6 +512,8 @@
 
 ## <a name='comments'>Comments</a>
 
+  - Documentation is highly recommended on Utility Modules. It is optional on all other types of Modules.
+  - Don't over document. Opt for descriptive names of variables, functions, and returns over documenting the obvious.
   - Use [JSDoc](http://usejsdoc.org) notation for commenting guidelines.
   - Use `/** ... */` for multiline comments.
 
@@ -792,7 +793,7 @@
 
 ## <a name='naming-conventions'>Naming Conventions</a>
 
-  - Avoid single letter names. Be descriptive with your naming. These get uglified anyways.
+  - Avoid single letter names. Be descriptive with your naming. These get Uglified anyways.
 
     ```javascript
     // bad
@@ -806,27 +807,7 @@
     }
     ```
 
-  - Use lower camelCase when naming objects, functions, and instances
-
-    ```javascript
-    // bad
-    var OBJEcttsssss = {};
-    var this_is_my_object = {};
-    var this-is-my-object = {};
-    function c() {};
-    var u = new user({
-      name: 'Bob Parr'
-    });
-
-    // good
-    var thisIsMyObject = {};
-    function thisIsMyFunction() {};
-    var user = new User({
-      name: 'Bob Parr'
-    });
-    ```
-
-  - Use PascalCase when naming constructors or classes
+  - Use PascalCase when naming Views, Constructors, Classes, Models, and Collections.
 
     ```javascript
     // bad
@@ -845,6 +826,26 @@
 
     var good = new User({
       name: 'yup'
+    });
+    ```
+
+  - Use lower camelCase for everything else (e.g.- objects, functions, and instances).
+
+    ```javascript
+    // bad
+    var OBJEcttsssss = {};
+    var this_is_my_object = {};
+    var this-is-my-object = {};
+    function c() {};
+    var u = new user({
+      name: 'Bob Parr'
+    });
+
+    // good
+    var thisIsMyObject = {};
+    function thisIsMyFunction() {};
+    var user = new User({
+      name: 'Bob Parr'
     });
     ```
 
